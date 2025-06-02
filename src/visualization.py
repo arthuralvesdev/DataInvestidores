@@ -1,0 +1,195 @@
+# src/visualization.py
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+
+def configurar_estilo_graficos():
+    """Configura os parâmetros globais do Matplotlib e Seaborn."""
+    # Você pode escolher o estilo que preferir
+    try:
+        plt.style.use('seaborn-v0_8-darkgrid')
+    except:
+        plt.style.use('seaborn-darkgrid') # Fallback para versões mais antigas
+        
+    sns.set_palette("Set2")
+    plt.rcParams['font.size'] = 10
+    plt.rcParams['axes.labelsize'] = 10
+    plt.rcParams['axes.titlesize'] = 12
+    plt.rcParams['xtick.labelsize'] = 9
+    plt.rcParams['ytick.labelsize'] = 9
+
+# SUBSTITUA SUA FUNÇÃO ATUAL POR ESTA VERSÃO COMPLETA
+def criar_dashboard_completo(df: pd.DataFrame, stats: dict, salvar_arquivo: str = None):
+    """
+    Cria dashboard completo com análise de investidores brasileiros.
+    """
+    configurar_estilo_graficos()
+    
+    fig = plt.figure(figsize=(22, 16))
+    fig.suptitle('CRESCIMENTO DOS INVESTIDORES NO BRASIL (2017-2024)\n' + 
+                 'Análise do Mercado de Capitais e Impactos Econômicos', 
+                 fontsize=18, fontweight='bold', y=0.98)
+    
+    # --- Gráfico 1: Evolução do número de investidores ---
+    ax1 = plt.subplot(3, 4, 1)
+    ax1.plot(df['ano'], df['total_investidores_milhoes'], 
+             marker='o', linewidth=3, markersize=8, color='#1f77b4')
+    ax1.fill_between(df['ano'], df['total_investidores_milhoes'], 
+                     alpha=0.3, color='#1f77b4')
+    ax1.set_title('Evolução Total de Investidores', fontweight='bold', pad=20)
+    ax1.set_xlabel('Ano')
+    ax1.set_ylabel('Investidores (milhões)')
+    ax1.grid(True, alpha=0.3)
+    ax1.set_ylim(0, None)
+    for i, (ano, valor) in enumerate(zip(df['ano'], df['total_investidores_milhoes'])):
+        ax1.annotate(f'{valor:.1f}M', (ano, valor), textcoords="offset points", 
+                     xytext=(0,10), ha='center', fontsize=9)
+    
+    # --- Gráfico 2: CPFs na B3 ---
+    ax2 = plt.subplot(3, 4, 2)
+    bars = ax2.bar(df['ano'], df['cpfs_b3_milhoes'], 
+                   color='#ff7f0e', alpha=0.8, width=0.6)
+    ax2.set_title('CPFs Cadastrados na B3', fontweight='bold', pad=20)
+    ax2.set_xlabel('Ano')
+    ax2.set_ylabel('CPFs (milhões)')
+    ax2.grid(True, alpha=0.3, axis='y')
+    for bar in bars:
+        height = bar.get_height()
+        ax2.text(bar.get_x() + bar.get_width()/2., height + 0.05,
+                 f'{height:.1f}M', ha='center', va='bottom', fontsize=9)
+    
+    # --- Gráfico 3: Volume negociado na B3 ---
+    ax3 = plt.subplot(3, 4, 3)
+    ax3.plot(df['ano'], df['volume_negociado_trilhoes'],
+             marker='s', linewidth=3, markersize=8, color='#2ca02c')
+    ax3.set_title('Volume Negociado na B3', fontweight='bold', pad=20)
+    ax3.set_xlabel('Ano')
+    ax3.set_ylabel('Volume (R$ trilhões)')
+    ax3.grid(True, alpha=0.3)
+    
+    # --- Gráfico 4: Patrimônio em fundos ---
+    ax4 = plt.subplot(3, 4, 4)
+    ax4.fill_between(df['ano'], df['patrimonio_fundos_trilhoes'],
+                     color='#d62728', alpha=0.7)
+    ax4.plot(df['ano'], df['patrimonio_fundos_trilhoes'],
+             color='#d62728', linewidth=2, marker='o')
+    ax4.set_title('Patrimônio em Fundos de Investimento', fontweight='bold', pad=20)
+    ax4.set_xlabel('Ano')
+    ax4.set_ylabel('Patrimônio (R$ trilhões)')
+    ax4.grid(True, alpha=0.3)
+    
+    # --- Gráfico 5: Correlação com indicadores econômicos ---
+    ax5 = plt.subplot(3, 4, 5)
+    ax5_twin = ax5.twinx()
+    line1, = ax5.plot(df['ano'], df['selic_media'], 
+                     'o-', color='red', linewidth=2, label='SELIC (%)')
+    line2, = ax5_twin.plot(df['ano'], df['cpfs_b3_milhoes'],
+                          's-', color='blue', linewidth=2, label='CPFs B3 (milhões)')
+    ax5.set_title('SELIC vs Investidores na Bolsa', fontweight='bold', pad=20)
+    ax5.set_xlabel('Ano')
+    ax5.set_ylabel('Taxa SELIC (%)', color='red')
+    ax5_twin.set_ylabel('CPFs na B3 (milhões)', color='blue')
+    ax5.grid(True, alpha=0.3)
+    lines = [line1, line2]
+    ax5.legend(lines, [l.get_label() for l in lines], loc='upper left')
+    
+    # --- Gráfico 6: PIB vs Patrimônio Total ---
+    ax6 = plt.subplot(3, 4, 6)
+    ax6.scatter(df['pib_trilhoes'], df['patrimonio_total_trilhoes'],
+                c=df['ano'], cmap='viridis', s=100, alpha=0.8)
+    ax6.set_title('PIB vs Patrimônio de Investimentos', fontweight='bold', pad=20)
+    ax6.set_xlabel('PIB (R$ trilhões)')
+    ax6.set_ylabel('Patrimônio Total (R$ trilhões)')
+    ax6.grid(True, alpha=0.3)
+    for i, ano in enumerate(df['ano']):
+        ax6.annotate(str(ano), (df['pib_trilhoes'].iloc[i], 
+                                df['patrimonio_total_trilhoes'].iloc[i]),
+                     xytext=(5, 5), textcoords='offset points', fontsize=8)
+    
+    # --- Gráfico 7: Crescimento anual de investidores ---
+    ax7 = plt.subplot(3, 4, 7)
+    crescimento_limpo = df['crescimento_investidores'].dropna()
+    anos_crescimento = df['ano'][1:]
+    colors = ['green' if x > 0 else 'red' for x in crescimento_limpo]
+    ax7.bar(anos_crescimento, crescimento_limpo, color=colors, alpha=0.8)
+    ax7.set_title('Taxa de Crescimento Anual', fontweight='bold', pad=20)
+    ax7.set_xlabel('Ano')
+    ax7.set_ylabel('Crescimento (%)')
+    ax7.axhline(y=0, color='black', linestyle='-', alpha=0.5)
+    ax7.grid(True, alpha=0.3, axis='y')
+    
+    # --- Gráfico 8: Número de fundos disponíveis ---
+    ax8 = plt.subplot(3, 4, 8)
+    ax8.bar(df['ano'], df['numero_fundos']/1000, 
+            color='purple', alpha=0.7)
+    ax8.set_title('Fundos de Investimento Disponíveis', fontweight='bold', pad=20)
+    ax8.set_xlabel('Ano')
+    ax8.set_ylabel('Número de Fundos (milhares)')
+    ax8.grid(True, alpha=0.3, axis='y')
+    
+    # --- Gráfico 9: Comparação inflação vs retornos ---
+    ax9 = plt.subplot(3, 4, 9)
+    width = 0.35
+    anos = df['ano']
+    x = np.arange(len(anos))
+    ax9.bar(x - width/2, df['inflacao_ipca'], width, 
+            label='Inflação (IPCA)', color='orange', alpha=0.8)
+    ax9.bar(x + width/2, df['selic_media'], width,
+            label='SELIC', color='blue', alpha=0.8)
+    ax9.set_title('Inflação vs Taxa SELIC', fontweight='bold', pad=20)
+    ax9.set_xlabel('Ano')
+    ax9.set_ylabel('Taxa (%)')
+    ax9.set_xticks(x)
+    ax9.set_xticklabels(anos)
+    ax9.legend()
+    ax9.grid(True, alpha=0.3, axis='y')
+    
+    # --- Bloco 10 & 11: Benefícios para o Brasil ---
+    ax10 = plt.subplot(3, 4, (10, 11))
+    ax10.axis('off')
+    beneficios_texto = f"""
+BENEFÍCIOS DO CRESCIMENTO DE INVESTIDORES PARA O BRASIL
+
+📈 NÚMEROS IMPRESSIONANTES:
+• Crescimento de {stats['crescimento_total']:.0f}% em investidores
+• {df['total_investidores_milhoes'].iloc[-1]:.1f} milhões de brasileiros investindo
+• R$ {df['patrimonio_total_trilhoes'].iloc[-1]:.1f} trilhões em patrimônio total
+• {df['empresas_listadas'].iloc[-1]} empresas listadas na B3
+
+    """
+    ax10.text(0.05, 0.95, beneficios_texto, transform=ax10.transAxes, fontsize=11,
+              verticalalignment='top', fontfamily='monospace',
+              bbox=dict(boxstyle='round,pad=1', facecolor='lightblue', alpha=0.8))
+    
+    # --- Bloco 12: Resumo executivo ---
+    ax12 = plt.subplot(3, 4, 12)
+    ax12.axis('off')
+    resumo_texto = f"""
+RESUMO EXECUTIVO
+
+🔥 CRESCIMENTO EXPLOSIVO:
+CPFs na B3: {stats['crescimento_b3']:.0f}%
+Patrimônio: {stats['crescimento_patrimonio']:.0f}%
+
+📊 CENÁRIO ATUAL ({df['ano'].iloc[-1]}):
+• {df['total_investidores_milhoes'].iloc[-1]:.1f}M investidores ativos
+• R$ {df['patrimonio_total_trilhoes'].iloc[-1]:.1f}T em investimentos
+• Taxa SELIC: {df['selic_media'].iloc[-1]:.1f}%
+• Inflação: {df['inflacao_ipca'].iloc[-1]:.1f}%
+
+    """
+    ax12.text(0.05, 0.95, resumo_texto, transform=ax12.transAxes, fontsize=10,
+              verticalalignment='top', fontfamily='monospace',
+              bbox=dict(boxstyle='round,pad=1', facecolor='lightgreen', alpha=0.8))
+    
+    # --- Finalização e salvamento ---
+    plt.tight_layout()
+    plt.subplots_adjust(top=0.94)
+    
+    if salvar_arquivo:
+        plt.savefig(salvar_arquivo, dpi=300, bbox_inches='tight', facecolor='white')
+        print(f"Dashboard salvo em: {salvar_arquivo}")
+    
+    plt.show()
