@@ -1,5 +1,3 @@
-# main.py
-
 import os
 from src import data_handler, analysis, visualization
 

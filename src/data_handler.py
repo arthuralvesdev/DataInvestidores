@@ -1,5 +1,3 @@
-# src/data_handler.py
-
 import pandas as pd
 
 def carregar_dados(caminho_arquivo: str) -> pd.DataFrame:

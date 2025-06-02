@@ -1,5 +1,3 @@
-# src/analysis.py
-
 import pandas as pd
 
 def analisar_crescimento(df: pd.DataFrame) -> dict:
