@@ -1,9 +1,7 @@
 import pandas as pd
 
 def analisar_crescimento(df: pd.DataFrame) -> dict:
-    """
-    Análise detalhada do crescimento de investidores.
-    """
+
     print("\n" + "="*60)
     print("ANÁLISE DO CRESCIMENTO DE INVESTIDORES NO BRASIL")
     print("="*60)
@@ -40,7 +38,7 @@ def analisar_crescimento(df: pd.DataFrame) -> dict:
 
 def criar_analise_textual(stats: dict, df: pd.DataFrame) -> str:
     """
-    Cria análise textual detalhada dos dados.
+    Texto que aparece no terminal, uma pequena análise
     """
     analise = f"""
 ANÁLISE DETALHADA: REVOLUÇÃO DOS INVESTIDORES NO BRASIL

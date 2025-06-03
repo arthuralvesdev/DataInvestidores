@@ -8,7 +8,7 @@ def carregar_dados(caminho_arquivo: str) -> pd.DataFrame:
     # Calcular métricas derivadas de investidores
     df['total_investidores_milhoes'] = (
         df['cpfs_b3_milhoes'] + 
-        df['cotistas_milhoes'] * 0.3  # 
+        df['cotistas_milhoes'] * 0.3  
     )
     
     df['crescimento_investidores'] = (
@@ -16,7 +16,7 @@ def carregar_dados(caminho_arquivo: str) -> pd.DataFrame:
     )
     
     df['patrimonio_total_trilhoes'] = (
-        df['volume_negociado_trilhoes'] * 0.2 +  # Estimativa de carteiras
+        df['volume_negociado_trilhoes'] * 0.2 + 
         df['patrimonio_fundos_trilhoes']
     )
     
@@ -24,6 +24,7 @@ def carregar_dados(caminho_arquivo: str) -> pd.DataFrame:
     return df
 
 def exportar_relatorio_completo(df: pd.DataFrame, nome_arquivo: str):
+
     """
     Exporta o DataFrame completo para um arquivo CSV.
     """

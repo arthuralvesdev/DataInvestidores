@@ -18,7 +18,7 @@ def configurar_estilo_graficos():
 
 def criar_dashboard_completo(df: pd.DataFrame, stats: dict, salvar_arquivo: str = None):
     """
-    Cria dashboard completo com análise de investidores brasileiros.
+    Aqui começa a criação dos Dashboards, dos gráficos.
     """
     configurar_estilo_graficos()
     
