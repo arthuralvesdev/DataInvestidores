@@ -15,7 +15,6 @@ def main():
     print("🇧🇷 INICIANDO ANÁLISE DE INVESTIDORES NO BRASIL 🇧🇷")
     print("="*60)
     
-    # Criar pasta de output se não existir
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
 

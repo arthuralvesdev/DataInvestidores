@@ -5,7 +5,6 @@ import seaborn as sns
 
 def configurar_estilo_graficos():
     """Configura os parâmetros globais do Matplotlib e Seaborn."""
-    # Você pode escolher o estilo que preferir
     try:
         plt.style.use('seaborn-v0_8-darkgrid')
     except:
@@ -18,10 +17,9 @@ def configurar_estilo_graficos():
     plt.rcParams['xtick.labelsize'] = 9
     plt.rcParams['ytick.labelsize'] = 9
 
-# SUBSTITUA SUA FUNÇÃO ATUAL POR ESTA VERSÃO COMPLETA
 def criar_dashboard_completo(df: pd.DataFrame, stats: dict, salvar_arquivo: str = None):
     """
-    Cria dashboard completo com análise de investidores brasileiros.
+    Aqui começa a criação dos Dashboards, dos gráficos.
     """
     configurar_estilo_graficos()
     
