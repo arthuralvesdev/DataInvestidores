@@ -56,7 +56,5 @@ PRINCIPAIS DESCOBERTAS:
 2. CRESCIMENTO DO PATRIMÔNIO EM FUNDOS
    - Patrimônio em fundos cresceu de R$ {df['patrimonio_fundos_trilhoes'].iloc[0]:.1f} trilhões para R$ {df['patrimonio_fundos_trilhoes'].iloc[-1]:.1f} trilhões.
    - Aumento de {stats['crescimento_patrimonio']:.1f}% no período, superando o crescimento do PIB.
-
-... (Continue com o restante da sua análise textual, usando f-strings para inserir dados dinâmicos) ...
     """
     return analise

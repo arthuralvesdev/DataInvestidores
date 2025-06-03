@@ -4,12 +4,10 @@ import numpy as np
 import seaborn as sns
 
 def configurar_estilo_graficos():
-    """Configura os parâmetros globais do Matplotlib e Seaborn."""
-    # Você pode escolher o estilo que preferir
     try:
         plt.style.use('seaborn-v0_8-darkgrid')
     except:
-        plt.style.use('seaborn-darkgrid') # Fallback para versões mais antigas
+        plt.style.use('seaborn-darkgrid') 
         
     sns.set_palette("Set2")
     plt.rcParams['font.size'] = 10
@@ -18,7 +16,6 @@ def configurar_estilo_graficos():
     plt.rcParams['xtick.labelsize'] = 9
     plt.rcParams['ytick.labelsize'] = 9
 
-# SUBSTITUA SUA FUNÇÃO ATUAL POR ESTA VERSÃO COMPLETA
 def criar_dashboard_completo(df: pd.DataFrame, stats: dict, salvar_arquivo: str = None):
     """
     Cria dashboard completo com análise de investidores brasileiros.
@@ -144,13 +141,12 @@ def criar_dashboard_completo(df: pd.DataFrame, stats: dict, salvar_arquivo: str 
     ax9.legend()
     ax9.grid(True, alpha=0.3, axis='y')
     
-    # --- Bloco 10 & 11: Benefícios para o Brasil ---
     ax10 = plt.subplot(3, 4, (10, 11))
     ax10.axis('off')
     beneficios_texto = f"""
-BENEFÍCIOS DO CRESCIMENTO DE INVESTIDORES PARA O BRASIL
+INVESTIMENTOS NO BRASIL EM NUMEROS
 
-📈 NÚMEROS IMPRESSIONANTES:
+
 • Crescimento de {stats['crescimento_total']:.0f}% em investidores
 • {df['total_investidores_milhoes'].iloc[-1]:.1f} milhões de brasileiros investindo
 • R$ {df['patrimonio_total_trilhoes'].iloc[-1]:.1f} trilhões em patrimônio total

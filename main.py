@@ -9,13 +9,9 @@ REPORT_FILE = os.path.join(OUTPUT_DIR, 'relatorio_investidores_brasil.csv')
 
 
 def main():
-    """
-    Função principal para executar a análise completa.
-    """
     print("🇧🇷 INICIANDO ANÁLISE DE INVESTIDORES NO BRASIL 🇧🇷")
     print("="*60)
     
-    # Criar pasta de output se não existir
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
 

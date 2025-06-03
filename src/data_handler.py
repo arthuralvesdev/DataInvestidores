@@ -1,16 +1,14 @@
 import pandas as pd
 
 def carregar_dados(caminho_arquivo: str) -> pd.DataFrame:
-    """
-    Carrega os dados de um arquivo CSV e calcula métricas derivadas.
-    """
+
     print(f"Carregando dados de: {caminho_arquivo}")
     df = pd.read_csv(caminho_arquivo)
     
     # Calcular métricas derivadas de investidores
     df['total_investidores_milhoes'] = (
         df['cpfs_b3_milhoes'] + 
-        df['cotistas_milhoes'] * 0.3  # Evitar dupla contagem
+        df['cotistas_milhoes'] * 0.3  # 
     )
     
     df['crescimento_investidores'] = (
@@ -29,7 +27,6 @@ def exportar_relatorio_completo(df: pd.DataFrame, nome_arquivo: str):
     """
     Exporta o DataFrame completo para um arquivo CSV.
     """
-    # Renomear colunas para português
     colunas_portugues = {
         'ano': 'Ano', 'cpfs_b3_milhoes': 'CPFs_B3_Milhões', 'volume_negociado_trilhoes': 'Volume_Negociado_Trilhões_R$',
         'empresas_listadas': 'Empresas_Listadas_B3', 'patrimonio_fundos_trilhoes': 'Patrimônio_Fundos_Trilhões_R$',
