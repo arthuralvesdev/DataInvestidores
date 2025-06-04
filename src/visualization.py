@@ -185,7 +185,6 @@ Patrimônio: {stats['crescimento_patrimonio']:.0f}%
 def criar_dashboard_perfil_investidor_refatorado(df: pd.DataFrame, salvar_arquivo: str = None):
     """
     Cria um dashboard de perfil dos investidores do Tesouro Direto, 
-    seguindo o estilo do primeiro script.
     """
     if df is None or df.empty:
         print("[AVISO] DataFrame de perfil não fornecido ou vazio. Geração de dashboard ignorada.")
