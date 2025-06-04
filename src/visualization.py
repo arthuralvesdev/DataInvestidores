@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+import os
 
 def configurar_estilo_graficos():
     try:
@@ -153,6 +154,8 @@ INVESTIMENTOS NO BRASIL EM NUMEROS
 • {df['empresas_listadas'].iloc[-1]} empresas listadas na B3
 
     """
+
+    
     ax10.text(0.05, 0.95, beneficios_texto, transform=ax10.transAxes, fontsize=11,
               verticalalignment='top', fontfamily='monospace',
               bbox=dict(boxstyle='round,pad=1', facecolor='lightblue', alpha=0.8))
@@ -178,6 +181,68 @@ Patrimônio: {stats['crescimento_patrimonio']:.0f}%
               verticalalignment='top', fontfamily='monospace',
               bbox=dict(boxstyle='round,pad=1', facecolor='lightgreen', alpha=0.8))
     
+
+def criar_dashboard_perfil_investidor(df: pd.DataFrame, salvar_arquivo: str):
+    """
+    Cria um dashboard consolidado para analisar o perfil dos investidores
+    a partir das colunas categóricas e de idade.
+    """
+    if df is None:
+        print("DataFrame de perfil não fornecido. Geração de dashboard ignorada.")
+        return
+
+    print("\n" + "="*60)
+    print("GERANDO DASHBOARD DE PERFIL DO INVESTIDOR")
+    print("="*60)
+
+    configurar_estilo_graficos()
+    fig, axes = plt.subplots(2, 3, figsize=(22, 12))
+    fig.suptitle('Dashboard de Perfil dos Investidores do Tesouro Direto', fontsize=20, fontweight='bold')
+    
+    # Removendo eixos não utilizados
+    axes[1, 2].axis('off')
+
+    # 1. Gráfico de Gênero (Pizza)
+    ax1 = axes[0, 0]
+    genero_counts = df['Genero'].value_counts()
+    ax1.pie(genero_counts, labels=genero_counts.index, autopct='%1.1f%%', startangle=90,
+            colors=sns.color_palette("Set2"), wedgeprops=dict(width=0.4))
+    ax1.set_title('Distribuição por Gênero', fontweight='bold')
+
+    # 2. Gráfico de Estado Civil (Barras Horizontais)
+    ax2 = axes[0, 1]
+    estado_civil_counts = df['Estado Civil'].value_counts().sort_values()
+    estado_civil_counts.plot(kind='barh', ax=ax2, color='skyblue')
+    ax2.set_title('Distribuição por Estado Civil', fontweight='bold')
+    ax2.set_xlabel('Quantidade')
+
+    # 3. Distribuição de Idade (Histograma)
+    ax3 = axes[0, 2]
+    sns.histplot(df['Idade'], kde=True, ax=ax3, color='salmon', bins=20)
+    ax3.set_title('Distribuição por Idade', fontweight='bold')
+    ax3.set_xlabel('Idade')
+    ax3.set_ylabel('Frequência')
+
+    # 4. Top 10 Profissões (Barras Horizontais)
+    ax4 = axes[1, 0]
+    top_10_profissoes = df['Profissao'].value_counts().nlargest(10).sort_values()
+    top_10_profissoes.plot(kind='barh', ax=ax4, color='mediumseagreen')
+    ax4.set_title('Top 10 Profissões', fontweight='bold')
+    ax4.set_xlabel('Quantidade')
+
+    # 5. Top 10 Estados (Barras Horizontais)
+    ax5 = axes[1, 1]
+    top_10_uf = df['UF do Investidor'].value_counts().nlargest(10).sort_values()
+    top_10_uf.plot(kind='barh', ax=ax5, color='darkorchid')
+    ax5.set_title('Top 10 UF dos Investidores', fontweight='bold')
+    ax5.set_xlabel('Quantidade')
+
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95]) # Ajusta o layout para o título principal
+    
+    plt.savefig(salvar_arquivo, dpi=200, bbox_inches='tight')
+    print(f"-> Dashboard de Perfil salvo em: {salvar_arquivo}")
+    plt.close(fig)
+    
     # --- Finalização e salvamento ---
     plt.tight_layout()
     plt.subplots_adjust(top=0.94)
@@ -187,3 +252,5 @@ Patrimônio: {stats['crescimento_patrimonio']:.0f}%
         print(f"Dashboard salvo em: {salvar_arquivo}")
     
     plt.show()
+
+    

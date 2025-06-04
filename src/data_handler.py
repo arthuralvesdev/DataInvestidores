@@ -1,6 +1,6 @@
 import pandas as pd
 
-def carregar_dados(caminho_arquivo: str) -> pd.DataFrame:
+def carregar_dados_mercado(caminho_arquivo: str) -> pd.DataFrame:
 
     print(f"Carregando dados de: {caminho_arquivo}")
     df = pd.read_csv(caminho_arquivo)
@@ -23,6 +23,31 @@ def carregar_dados(caminho_arquivo: str) -> pd.DataFrame:
     print(f"Dados carregados: {len(df)} anos de histórico")
     return df
 
+def carregar_dados_perfil(caminho_arquivo: str) -> pd.DataFrame:
+    """
+    Carrega os dados de perfil do investidor e faz uma limpeza inicial.
+    """
+    print(f"\nCarregando dados de perfil de: {caminho_arquivo}")
+    try:
+        df = pd.read_csv(caminho_arquivo, sep=';')
+        
+        # --- Limpeza de Dados ---
+        # Lista das colunas de texto que você mencionou
+        colunas_texto = ['Estado Civil', 'Genero', 'Profissao', 'UF do Investidor']
+        for coluna in colunas_texto:
+            if coluna in df.columns:
+                # Remove espaços em branco no início/fim e converte para título
+                df[coluna] = df[coluna].str.strip().str.title()
+        
+        print(f"Dados de perfil carregados e limpos: {len(df)} linhas.")
+        return df
+    except FileNotFoundError:
+        print(f"Erro: Arquivo '{caminho_arquivo}' não encontrado.")
+        return None
+    except Exception as e:
+        print(f"Ocorreu um erro ao carregar o arquivo: {e}")
+        return None
+    
 def exportar_relatorio_completo(df: pd.DataFrame, nome_arquivo: str):
 
     """
