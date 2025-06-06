@@ -2,41 +2,50 @@ import os
 from src import data_handler, analysis, visualization
 
 # --- Configurações do Projeto ---
-DATA_FILE = 'data/dados_mercado.csv'
+
+DATA_MERCADO_FILE = 'data/dados_mercado.csv'
+PERFIL_FILE = 'data/InvestidoresTesouroDireto2024.csv' # SEU ARQUIVO DE PERFIL
+
+
 OUTPUT_DIR = 'output'
-DASHBOARD_FILE = os.path.join(OUTPUT_DIR, 'investidores_brasil_dashboard.png')
-REPORT_FILE = os.path.join(OUTPUT_DIR, 'relatorio_investidores_brasil.csv')
+
+DASHBOARD_MERCADO_FILE = os.path.join(OUTPUT_DIR, 'dashboard_mercado_financeiro.png')
+REPORT_MERCADO_FILE = os.path.join(OUTPUT_DIR, 'relatorio_mercado_financeiro.csv')
+DASHBOARD_PERFIL_FILE = os.path.join(OUTPUT_DIR, 'dashboard_perfil_investidores.png')
 
 
 def main():
-    print("🇧🇷 INICIANDO ANÁLISE DE INVESTIDORES NO BRASIL 🇧🇷")
+    print("INICIANDO ANÁLISE DE INVESTIDORES NO BRASIL")
     print("="*60)
     
-    if not os.path.exists(OUTPUT_DIR):
-        os.makedirs(OUTPUT_DIR)
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-    # 1. Carregar e processar os dados
-    dados_completos = data_handler.carregar_dados(DATA_FILE)
+    # --- FLUXO 1: ANÁLISE DETALHADA DO MERCADO FINANCEIRO ---
+    print("\n[FLUXO 1] Executando análise do arquivo de mercado...")
+    dados_mercado = data_handler.carregar_dados_mercado(DATA_MERCADO_FILE)
     
-    # 2. Realizar análise estatística
-    estatisticas = analysis.analisar_crescimento(dados_completos)
-    
-    # 3. Gerar e exibir o dashboard visual
-    visualization.criar_dashboard_completo(dados_completos, estatisticas, salvar_arquivo=DASHBOARD_FILE)
-    
-    # 4. Exportar o relatório completo em CSV
-    data_handler.exportar_relatorio_completo(dados_completos, nome_arquivo=REPORT_FILE)
-    
-    # 5. Gerar e imprimir a análise textual
-    analise_texto = analysis.criar_analise_textual(estatisticas, dados_completos)
-    print("\n" + "="*60)
-    print(analise_texto)
-    print("="*60)
+    if dados_mercado is not None:
+        estatisticas = analysis.analisar_crescimento(dados_mercado)
+        visualization.criar_dashboard_completo(dados_mercado, estatisticas, salvar_arquivo=DASHBOARD_MERCADO_FILE)
+        data_handler.exportar_relatorio_completo(dados_mercado, nome_arquivo=REPORT_MERCADO_FILE)
+        analise_texto = analysis.criar_analise_textual(estatisticas, dados_mercado)
+        print("\n" + "="*60)
+        print(analise_texto)
+        print("="*60)
+    else:
+        print("Não foi possível carregar os dados de mercado. Fluxo 1 ignorado.")
 
+    # --- FLUXO 2: GERAÇÃO DO DASHBOARD DE PERFIL ---
+    print("\n[FLUXO 2] Executando análise do arquivo de perfil do investidor...")
+    dados_perfil = data_handler.carregar_dados_perfil(PERFIL_FILE)
+    
+    visualization.criar_dashboard_perfil_investidor_refatorado(dados_perfil, salvar_arquivo=DASHBOARD_PERFIL_FILE)
+    
     print("\n✅ PROCESSO FINALIZADO COM SUCESSO!")
-    print("ARQUIVOS GERADOS NA PASTA 'output':")
-    print(f"📊 {DASHBOARD_FILE}")
-    print(f"📈 {REPORT_FILE}")
+    print("Verifique os arquivos gerados na pasta 'output':")
+    print(f"📊 Dashboard Mercado: {DASHBOARD_MERCADO_FILE}")
+    print(f"📈 Relatório Mercado: {REPORT_MERCADO_FILE}")
+    print(f"📊 Dashboard Perfil: {DASHBOARD_PERFIL_FILE}")
 
 
 if __name__ == "__main__":

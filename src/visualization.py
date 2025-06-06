@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+import os
 
 def configurar_estilo_graficos():
     try:
@@ -153,6 +154,8 @@ INVESTIMENTOS NO BRASIL EM NUMEROS
 • {df['empresas_listadas'].iloc[-1]} empresas listadas na B3
 
     """
+
+    
     ax10.text(0.05, 0.95, beneficios_texto, transform=ax10.transAxes, fontsize=11,
               verticalalignment='top', fontfamily='monospace',
               bbox=dict(boxstyle='round,pad=1', facecolor='lightblue', alpha=0.8))
@@ -178,12 +181,129 @@ Patrimônio: {stats['crescimento_patrimonio']:.0f}%
               verticalalignment='top', fontfamily='monospace',
               bbox=dict(boxstyle='round,pad=1', facecolor='lightgreen', alpha=0.8))
     
-    # --- Finalização e salvamento ---
-    plt.tight_layout()
-    plt.subplots_adjust(top=0.94)
+
+def criar_dashboard_perfil_investidor_refatorado(df: pd.DataFrame, salvar_arquivo: str = None):
+    """
+    Cria um dashboard de perfil dos investidores do Tesouro Direto, 
+    """
+    if df is None or df.empty:
+        print("[AVISO] DataFrame de perfil não fornecido ou vazio. Geração de dashboard ignorada.")
+        return
+
+    configurar_estilo_graficos()
     
+    fig = plt.figure(figsize=(22, 12))
+    fig.suptitle('Dashboard de Perfil dos Investidores do Tesouro Direto', 
+                 fontsize=20, fontweight='bold', y=0.98)
+
+    # --- 1. Gráfico de Gênero ---
+    ax1 = plt.subplot(2, 3, 1)
+    genero_counts = df['Genero'].fillna('Não Informado').value_counts()
+    ax1.pie(genero_counts, labels=genero_counts.index, autopct='%1.1f%%', 
+            startangle=90, colors=['#ff9999','#66b3ff','#99ff99'])
+    ax1.set_title('Distribuição por Gênero')
+    ax1.set_ylabel('') # Remove o rótulo do eixo y que o `pie` adiciona
+
+    # --- 2. Gráfico de Estado Civil ---
+    ax2 = plt.subplot(2, 3, 2)
+    estado_civil_counts = df['Estado Civil'].fillna('Não Informado').value_counts().nlargest(5).sort_values()
+    bars2 = ax2.barh(estado_civil_counts.index, estado_civil_counts.values, color='skyblue')
+    ax2.set_title('Top 5 Estados Civis')
+    ax2.set_xlabel('Quantidade')
+    # Adicionar rótulos de dados
+    for bar in bars2:
+        ax2.text(bar.get_width() + 5, bar.get_y() + bar.get_height()/2, 
+                 f'{int(bar.get_width())}', va='center', ha='left', fontsize=9)
+
+    # --- 3. Distribuição de Idade ---
+    ax3 = plt.subplot(2, 3, 3)
+    idades_validas = pd.to_numeric(df['Idade'], errors='coerce').dropna()
+    sns.histplot(idades_validas, kde=True, ax=ax3, color='salmon', bins=20)
+    ax3.set_title('Distribuição por Idade')
+    ax3.set_xlabel('Idade')
+    ax3.set_ylabel('Frequência')
+    # Adicionar linha da média
+    ax3.axvline(idades_validas.mean(), color='red', linestyle='--', linewidth=2)
+    ax3.text(idades_validas.mean() * 1.05, ax3.get_ylim()[1] * 0.9, 
+             f'Média: {idades_validas.mean():.1f} anos', color='red')
+
+    # --- 4. Top 10 Profissões ---
+    ax4 = plt.subplot(2, 3, 4)
+    profissao_counts = df['Profissao'].fillna('Não Informado').value_counts().nlargest(10).sort_values()
+    bars4 = ax4.barh(profissao_counts.index, profissao_counts.values, color='mediumseagreen')
+    ax4.set_title('Top 10 Profissões')
+    ax4.set_xlabel('Quantidade')
+    
+    # --- 5. Top 10 Estados (UF) ---
+    ax5 = plt.subplot(2, 3, 5)
+    uf_counts = df['UF do Investidor'].fillna('Não Informado').value_counts().nlargest(10).sort_values()
+    bars5 = ax5.barh(uf_counts.index, uf_counts.values, color='darkorchid')
+    ax5.set_title('Top 10 UF dos Investidores')
+    ax5.set_xlabel('Quantidade')
+    # Adicionar rótulos de dados
+    for bar in bars5:
+        ax5.text(bar.get_width() + 5, bar.get_y() + bar.get_height()/2, 
+                 f'{int(bar.get_width())}', va='center', ha='left', fontsize=9)
+
+    # --- 6. Bloco de Resumo Executivo ---
+    ax6 = plt.subplot(2, 3, 6)
+    ax6.axis('off')
+    
+    # Gerando estatísticas para o resumo
+    try:
+        idade_media = f"{df['Idade'].mean():.1f} anos"
+        genero_dominante = df['Genero'].mode()[0]
+        uf_dominante = df['UF do Investidor'].mode()[0]
+        total_investidores = len(df)
+    except Exception:
+        idade_media = "N/D"
+        genero_dominante = "N/D"
+        uf_dominante = "N/D"
+        total_investidores = "N/D"
+        
+    resumo_texto = f"""
+INSIGHTS DO PERFIL
+
+• Total de Investidores na Amostra: {total_investidores}
+• Idade Média: {idade_media}
+• Gênero Dominante: {genero_dominante}
+• Estado com Mais Investidores: {uf_dominante}
+
+Diagnóstico: O perfil predominante é de
+investidores de [idade] de [gênero],
+concentrados na região [região]. Isso
+sugere oportunidades de expansão em
+outros segmentos demográficos.
+    """
+    
+    ax6.text(0.05, 0.95, resumo_texto, transform=ax6.transAxes, fontsize=12,
+             verticalalignment='top', fontfamily='monospace',
+             bbox=dict(boxstyle='round,pad=0.5', facecolor='#f0f0f0', alpha=0.9))
+
+    # --- Finalização e Salvamento ---
+    plt.tight_layout(rect=[0, 0, 1, 0.96]) # Ajusta para o título principal
+
     if salvar_arquivo:
-        plt.savefig(salvar_arquivo, dpi=300, bbox_inches='tight', facecolor='white')
-        print(f"Dashboard salvo em: {salvar_arquivo}")
+        try:
+            plt.savefig(salvar_arquivo, dpi=200, bbox_inches='tight', facecolor='white')
+            print(f"\n[SUCESSO] Dashboard de perfil salvo em: {salvar_arquivo}")
+        except Exception as e:
+            print(f"❌ ERRO CRÍTICO AO SALVAR O ARQUIVO DE IMAGEM: {e}")
+    else:
+        print("\n[INFO] Exibindo o dashboard na tela.")
+        plt.show()
+
+    plt.close(fig) # Fecha a figura para liberar memória
+
     
-    plt.show()
+    # # --- Finalização e salvamento ---
+    # plt.tight_layout()
+    # plt.subplots_adjust(top=0.94)
+    
+    # if salvar_arquivo:
+    #     plt.savefig(salvar_arquivo, dpi=300, bbox_inches='tight', facecolor='white')
+    #     print(f"Dashboard salvo em: {salvar_arquivo}")
+    
+    # plt.show()
+
+    
