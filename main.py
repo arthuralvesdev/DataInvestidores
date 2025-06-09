@@ -4,14 +4,13 @@ from src import data_handler, analysis, visualization
 # --- Configurações do Projeto ---
 
 DATA_MERCADO_FILE = 'data/dados_mercado.csv'
-PERFIL_FILE = 'data/InvestidoresTesouroDireto2024.csv' # SEU ARQUIVO DE PERFIL
+PERFIL_FILE = 'data/InvestidoresTesouroDireto2024.csv' 
 
 
 OUTPUT_DIR = 'output'
 
-DASHBOARD_MERCADO_FILE = os.path.join(OUTPUT_DIR, 'dashboard_mercado_financeiro.png')
-REPORT_MERCADO_FILE = os.path.join(OUTPUT_DIR, 'relatorio_mercado_financeiro.csv')
-DASHBOARD_PERFIL_FILE = os.path.join(OUTPUT_DIR, 'dashboard_perfil_investidores.png')
+DASHBOARD_MERCADO_FILE = os.path.join(OUTPUT_DIR, 'dashboardMercadoFinanceiro.png')
+DASHBOARD_TESOURO_FILE = os.path.join(OUTPUT_DIR, 'dashboardTesouroDireto.png')
 
 
 def main():
@@ -27,7 +26,6 @@ def main():
     if dados_mercado is not None:
         estatisticas = analysis.analisar_crescimento(dados_mercado)
         visualization.criar_dashboard_completo(dados_mercado, estatisticas, salvar_arquivo=DASHBOARD_MERCADO_FILE)
-        data_handler.exportar_relatorio_completo(dados_mercado, nome_arquivo=REPORT_MERCADO_FILE)
         analise_texto = analysis.criar_analise_textual(estatisticas, dados_mercado)
         print("\n" + "="*60)
         print(analise_texto)
@@ -39,13 +37,12 @@ def main():
     print("\n[FLUXO 2] Executando análise do arquivo de perfil do investidor...")
     dados_perfil = data_handler.carregar_dados_perfil(PERFIL_FILE)
     
-    visualization.criar_dashboard_perfil_investidor_refatorado(dados_perfil, salvar_arquivo=DASHBOARD_PERFIL_FILE)
+    visualization.dashboardTesouroDireto(dados_perfil, salvar_arquivo=DASHBOARD_TESOURO_FILE)
     
     print("\nPROCESSO FINALIZADO COM SUCESSO!")
     print("Verifique os arquivos gerados na pasta 'output':")
     print(f"Dashboard Mercado: {DASHBOARD_MERCADO_FILE}")
-    print(f"Relatório Mercado: {REPORT_MERCADO_FILE}")
-    print(f"Dashboard Perfil: {DASHBOARD_PERFIL_FILE}")
+    print(f"Dashboard Perfil: {DASHBOARD_TESOURO_FILE}")
 
 
 if __name__ == "__main__":

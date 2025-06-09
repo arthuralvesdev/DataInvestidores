@@ -24,8 +24,8 @@ def criar_dashboard_completo(df: pd.DataFrame, stats: dict, salvar_arquivo: str 
     configurar_estilo_graficos()
     
     fig = plt.figure(figsize=(22, 16))
-    fig.suptitle('CRESCIMENTO DOS INVESTIDORES NO BRASIL (2017-2024)\n' + 
-                 'Análise do Mercado de Capitais e Impactos Econômicos', 
+    fig.suptitle('CRESCIMENTO DOS INVESTIMENTOS NO BRASIL (2017-2024)\n' + 
+                 '', 
                  fontsize=18, fontweight='bold', y=0.98)
     
     # --- Gráfico 1: Evolução do número de investidores ---
@@ -160,29 +160,22 @@ INVESTIMENTOS NO BRASIL EM NUMEROS
               verticalalignment='top', fontfamily='monospace',
               bbox=dict(boxstyle='round,pad=1', facecolor='lightblue', alpha=0.8))
     
-    # --- Bloco 12: Resumo executivo ---
+    # --- Bloco 12: Resumo ---
     ax12 = plt.subplot(3, 4, 12)
     ax12.axis('off')
     resumo_texto = f"""
-RESUMO EXECUTIVO
+RESUMO DOS DADOS
 
-🔥 CRESCIMENTO EXPLOSIVO:
+CRESCIMENTO EXPLOSIVO:
 CPFs na B3: {stats['crescimento_b3']:.0f}%
 Patrimônio: {stats['crescimento_patrimonio']:.0f}%
-
-📊 CENÁRIO ATUAL ({df['ano'].iloc[-1]}):
-• {df['total_investidores_milhoes'].iloc[-1]:.1f}M investidores ativos
-• R$ {df['patrimonio_total_trilhoes'].iloc[-1]:.1f}T em investimentos
-• Taxa SELIC: {df['selic_media'].iloc[-1]:.1f}%
-• Inflação: {df['inflacao_ipca'].iloc[-1]:.1f}%
-
     """
     ax12.text(0.05, 0.95, resumo_texto, transform=ax12.transAxes, fontsize=10,
               verticalalignment='top', fontfamily='monospace',
               bbox=dict(boxstyle='round,pad=1', facecolor='lightgreen', alpha=0.8))
     
 
-def criar_dashboard_perfil_investidor_refatorado(df: pd.DataFrame, salvar_arquivo: str = None):
+def dashboardTesouroDireto(df: pd.DataFrame, salvar_arquivo: str = None):
     """
     Dashboard de perfil dos investidores do Tesouro Direto
     """
@@ -269,41 +262,23 @@ INSIGHTS
 • Gênero Dominante: {genero_dominante}
 • Estado com Mais Investidores: {uf_dominante}
 
-Diagnóstico: O perfil predominante é de
-investidores de [idade] de [gênero],
-concentrados na região [região]. Isso
-sugere oportunidades de expansão em
-outros segmentos demográficos.
+O perfil predominante é de
+investidores de 39,1 anos, de gênero M,
+concentrados na região Sudeste.
     """
     
     ax6.text(0.05, 0.95, resumo_texto, transform=ax6.transAxes, fontsize=12,
              verticalalignment='top', fontfamily='monospace',
              bbox=dict(boxstyle='round,pad=0.5', facecolor='#f0f0f0', alpha=0.9))
-
-    # --- Finalização e Salvamento ---
-    plt.tight_layout(rect=[0, 0, 1, 0.96]) # Ajusta para o título principal
-
+    
+    # --- Finalização e salvamento ---
+    plt.tight_layout()
+    plt.subplots_adjust(top=0.94)
+    
     if salvar_arquivo:
-        try:
-            plt.savefig(salvar_arquivo, dpi=200, bbox_inches='tight', facecolor='white')
-            print(f"\n[SUCESSO] Dashboard de perfil salvo em: {salvar_arquivo}")
-        except Exception as e:
-            print(f"ERRO CRÍTICO AO SALVAR O ARQUIVO DE IMAGEM: {e}")
-    else:
-        print("\n[INFO] Exibindo o dashboard na tela.")
-        plt.show()
-
-    plt.close(fig) # Fecha a figura para liberar memória
-
+        plt.savefig(salvar_arquivo, dpi=300, bbox_inches='tight', facecolor='white')
+        print(f"\n[SUCESSO] Dashboard de perfil salvo em: {salvar_arquivo}")
     
-    # # --- Finalização e salvamento ---
-    # plt.tight_layout()
-    # plt.subplots_adjust(top=0.94)
-    
-    # if salvar_arquivo:
-    #     plt.savefig(salvar_arquivo, dpi=300, bbox_inches='tight', facecolor='white')
-    #     print(f"Dashboard salvo em: {salvar_arquivo}")
-    
-    # plt.show()
+    plt.show()
 
     
