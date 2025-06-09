@@ -41,11 +41,11 @@ def main():
     
     visualization.criar_dashboard_perfil_investidor_refatorado(dados_perfil, salvar_arquivo=DASHBOARD_PERFIL_FILE)
     
-    print("\n✅ PROCESSO FINALIZADO COM SUCESSO!")
+    print("\nPROCESSO FINALIZADO COM SUCESSO!")
     print("Verifique os arquivos gerados na pasta 'output':")
-    print(f"📊 Dashboard Mercado: {DASHBOARD_MERCADO_FILE}")
-    print(f"📈 Relatório Mercado: {REPORT_MERCADO_FILE}")
-    print(f"📊 Dashboard Perfil: {DASHBOARD_PERFIL_FILE}")
+    print(f"Dashboard Mercado: {DASHBOARD_MERCADO_FILE}")
+    print(f"Relatório Mercado: {REPORT_MERCADO_FILE}")
+    print(f"Dashboard Perfil: {DASHBOARD_PERFIL_FILE}")
 
 
 if __name__ == "__main__":

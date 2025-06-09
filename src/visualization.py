@@ -184,7 +184,7 @@ Patrimônio: {stats['crescimento_patrimonio']:.0f}%
 
 def criar_dashboard_perfil_investidor_refatorado(df: pd.DataFrame, salvar_arquivo: str = None):
     """
-    Cria um dashboard de perfil dos investidores do Tesouro Direto, 
+    Dashboard de perfil dos investidores do Tesouro Direto
     """
     if df is None or df.empty:
         print("[AVISO] DataFrame de perfil não fornecido ou vazio. Geração de dashboard ignorada.")
@@ -262,7 +262,7 @@ def criar_dashboard_perfil_investidor_refatorado(df: pd.DataFrame, salvar_arquiv
         total_investidores = "N/D"
         
     resumo_texto = f"""
-INSIGHTS DO PERFIL
+INSIGHTS
 
 • Total de Investidores na Amostra: {total_investidores}
 • Idade Média: {idade_media}
@@ -288,7 +288,7 @@ outros segmentos demográficos.
             plt.savefig(salvar_arquivo, dpi=200, bbox_inches='tight', facecolor='white')
             print(f"\n[SUCESSO] Dashboard de perfil salvo em: {salvar_arquivo}")
         except Exception as e:
-            print(f"❌ ERRO CRÍTICO AO SALVAR O ARQUIVO DE IMAGEM: {e}")
+            print(f"ERRO CRÍTICO AO SALVAR O ARQUIVO DE IMAGEM: {e}")
     else:
         print("\n[INFO] Exibindo o dashboard na tela.")
         plt.show()
